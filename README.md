@@ -24,10 +24,10 @@ Using the example data files, you can use the following commands to map expressi
 
     # make sure tabix is installed in your environment
     cd $RASQUALDIR
-    tabix data/chr11.gz 11:2315000-2340000 | bin/rasqual -y data/Y.bin -k data/K.bin -n 24 -j 1 -l 409 -m 63 \
+    tabix data/chr11.gz 11:2315000-2340000 | bin/rasqual -y data/Y.bin -k data/K.bin -n 24 -j 1 -l 378 -m 62 \
         -s 2316875,2320655,2321750,2321914,2324112 -e 2319151,2320937,2321843,2323290,2324279 \
         -t -f C11orf21 -z
-    tabix data/chr11.gz 11:2315000-2340000 | bin/rasqual -y data/Y.bin -k data/K.bin -n 24 -j 2 -l 409 -m 61 \
+    tabix data/chr11.gz 11:2315000-2340000 | bin/rasqual -y data/Y.bin -k data/K.bin -n 24 -j 2 -l 378 -m 60 \
         -s 2323227,2323938,2324640,2325337,2328175,2329966,2330551,2331219,2334884,2335715,2338574,2339093 \
         -e 2323452,2324188,2324711,2325434,2328220,2330040,2330740,2331248,2334985,2337897,2338755,2339430 \
         -t -f TSPAN32 -z
@@ -144,7 +144,7 @@ Note that you need to prepare a GC content file (gcc.txt in this example) to app
 
 Real data is usually affected by hidden confounding factors, such as sequencing batch, sample preparation date etc, that can reduce power to detect QTLs. RASQUAL handles covariates as an input (**-x** option).  The following is the same eQTL mapping example above, but with covariates:
 
-    tabix data/chr11.gz 11:2315000-2340000 | bin/rasqual -y data/Y.bin -k data/K.bin -n 24 -j 1 -l 409 -m 63 \
+    tabix data/chr11.gz 11:2315000-2340000 | bin/rasqual -y data/Y.bin -k data/K.bin -n 24 -j 1 -l 378 -m 62 \
         -s 2316875,2320655,2321750,2321914,2324112 -e 2319151,2320937,2321843,2323290,2324279 \
         -z -t -f C11orf21 \
         -x data/X.bin
@@ -218,6 +218,14 @@ RASQUAL is now multithreaded in order to speed up execution times, which require
 
 To maximize power to detect QTLs, RASQUAL uses all fSNPs with MAF>0.0, pHWE>0.0 and imputation quality score RSQ>0.0.  However, RASQUAL takes ages to map QTLs with a number of fSNPs in a feature (e.g., long genes).  Therefore you may want to reduce the number of fSNPs with additional filters.  We introduced the following new options **--minor-allele-frequency-fsnp**, **--imputation-quality-fsnp** and **--hardy-weinberg-pvalue-fsnp** to eliminate some of fSNPs which are possibly not so informative.
         
+## Conditional analysis
+
+To map subsidiary QTLs conditional on the lead QTL variant(s) can be performed with the following option:
+
+    bin/rasqual ... -k2 rs0001:0.1,rs0002:0.2 ...
+    
+You may introduce any number of variants with thier effect sizes (Pi values) as comma separated values where each variant ID and its Pi value have to be connected by colon (:).
+
 ## Warnings
 
 To save the memory, each variant ID in the VCF file must be shorter than 100 characters; otherwise a buffer overflow happens.

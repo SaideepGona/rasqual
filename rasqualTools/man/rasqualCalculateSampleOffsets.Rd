@@ -4,8 +4,8 @@
 \alias{rasqualCalculateSampleOffsets}
 \title{Calculate sample-specic offsets for RASQUAL}
 \usage{
-rasqualCalculateSampleOffsets(counts, gene_metadata, method = "library_size",
-  gc_correct = TRUE)
+rasqualCalculateSampleOffsets(counts, gene_metadata = NULL,
+  method = "library_size", gc_correct = TRUE)
 }
 \arguments{
 \item{counts}{Matrix of read counts (genes in rows, samples in columns)}

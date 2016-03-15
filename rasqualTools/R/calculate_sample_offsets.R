@@ -10,25 +10,20 @@
 #'
 #' @return Matrix of gene-specifc offsets.
 #' @export
-rasqualCalculateSampleOffsets <- function(counts, gene_metadata, method = "library_size", gc_correct = TRUE){
+rasqualCalculateSampleOffsets <- function(counts, gene_metadata = NULL, method = "library_size", gc_correct = TRUE){
   
-  if(method == "library_size"){
-    #Calculate library sizes
-    library_size = colSums(counts)
-    size_factors = library_size/mean(library_size) #Standardise
-    size_matrix = matrix(rep(size_factors, nrow(counts)), nrow = nrow(counts), byrow = TRUE)
-    rownames(size_matrix) = rownames(counts)
-    colnames(size_matrix) = colnames(counts)
-  } else if (method == "RLE"){
-    #Calculate RLE estimate of library size instead
-    norm_factors = calculateNormFactors(counts, method = "RLE")
-    size_matrix = matrix(rep(norm_factors$norm_factor, nrow(counts)), nrow = nrow(counts), byrow = TRUE)
-    rownames(size_matrix) = rownames(counts)
-    colnames(size_matrix) = colnames(counts)
-    
-  }else{
-    stop("Invalid method specification.")
+  if(gc_correct == TRUE){
+    #Make sure that gene_metadata has the required columns
+    assertthat::assert_that(assertthat::has_name(gene_metadata, "gene_id"))
+    assertthat::assert_that(assertthat::has_name(gene_metadata, "percentage_gc_content"))
   }
+  
+  #Calculate library sizes
+  library_size = colSums(counts)
+  size_factors = library_size/mean(library_size) #Standardise
+  size_matrix = matrix(rep(size_factors, nrow(counts)), nrow = nrow(counts), byrow = TRUE)
+  rownames(size_matrix) = rownames(counts)
+  colnames(size_matrix) = colnames(counts)
   
   #Apply GC correction
   if(gc_correct == TRUE){

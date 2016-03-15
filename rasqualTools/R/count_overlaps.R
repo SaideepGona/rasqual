@@ -38,17 +38,29 @@ countSnpsOverlapingPeaks <- function(peak_metadata, snp_coords, cis_window = 500
 #'
 #' @return Data frame with exon coordinates, cis region coordiantes as well as the number of cis and feature snps.
 #' @export
+#' @importFrom magrittr "%>%"
 countSnpsOverlapingExons <- function(gene_metadata, snp_coords, cis_window = 5e5){
   
+  #Check that all required columns exist in the input data
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "gene_id"))
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "chr"))
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "strand"))
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "exon_starts"))
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "exon_ends"))
+  
+  assertthat::assert_that(assertthat::has_name(snp_coords, "chr"))
+  assertthat::assert_that(assertthat::has_name(snp_coords, "pos"))
+  assertthat::assert_that(assertthat::has_name(snp_coords, "snp_id"))
+
   #Split exon coordinates into separate rows
-  gene_df_list = plyr::dlply(gene_metadata, .(gene_id), function(x){
+  gene_df_list = plyr::dlply(gene_metadata, plyr::.(gene_id), function(x){
     data.frame(gene_id = x$gene_id, 
                seqnames = x$chr,
                strand = x$strand,
                start = as.numeric(unlist(strsplit(x$exon_starts,","))),
                end = as.numeric(unlist(strsplit(x$exon_ends,","))) )
   })
-  exon_df = plyr::ldply(gene_df_list, .id = NULL) %>% tbl_df()
+  exon_df = plyr::ldply(gene_df_list, .id = NULL) %>% dplyr::tbl_df()
   
   #Counts the number of feature SNPs
   exon_granges = dataFrameToGRanges(exon_df)

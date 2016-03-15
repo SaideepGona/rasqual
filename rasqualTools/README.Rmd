@@ -1,0 +1,54 @@
+---
+output: 
+  html_document: 
+    keep_md: yes
+---
+```{r echo = FALSE}
+data("counts_matrix")
+data("gene_metadata")
+data("snp_coords")
+library("devtools")
+load_all("../rasqualTools")
+data("gene_metadata")
+```
+
+### STEP 1: Save read count matrix onto disk
+Our read count table is on the `counts_matrix` object:
+```{r}
+print(counts_matrix[1:6, 1:6])
+```
+RASQUAL needs the counts matrix to be in a binary format. We can use `saveRasqualMatrices` command to save poth plain text as well as binary versions of the matrixt to disk:
+```{r}
+saveRasqualMatrices(list(cellTypeA = counts_matrix), "../output/", file_suffix = "expression")
+```
+
+### STEP 2: Calculate size factors
+The simples option is to just use the library size of each sample as the size factor:
+```{r}
+size_factors = rasqualCalculateSampleOffsets(counts_matrix, gc_correct = FALSE)
+saveRasqualMatrices(list(cellTypeA = size_factors), "../output/", file_suffix = "size_factors")
+
+```
+Alternatively, if we have a `gene_metadata` data frame that matches gene_ids to their average gc content then we can use that information to correct for the differences in GC bias between samples.
+```{r}
+dplyr::select(gene_metadata, gene_id, percentage_gc_content)
+size_factors = rasqualCalculateSampleOffsets(counts_matrix, gene_metadata, gc_correct = TRUE)
+saveRasqualMatrices(list(cellTypeA = size_factors), "../output/", file_suffix = "size_factors_gc")
+```
+
+### STEP 3: Calculate the number of SNPs overlapping each gene
+We can use the `countSnpsOverlapingExons` function to do that. Lets look at a small example. Here is the gene_metaata data frame with minimal required columns:
+```{r}
+gene_data = dplyr::select(gene_metadata, gene_id, chr, strand, exon_starts, exon_ends)[c(1,6,20,34),] 
+print(gene_data)
+```
+And here are the SNP coordinates:
+```{r}
+print(snp_coords)
+```
+We can now count how many SNP fall within the gene itself or its cis window. This command adds the `feature_snp_count` and `cis_snp_count` columns to the imput gene_metadata data frame.
+```{r}
+snp_counts = countSnpsOverlapingExons(gene_data, snp_coords, cis_window = 5e5)
+dplyr::select(snp_counts, gene_id, feature_snp_count, cis_snp_count)
+```
+

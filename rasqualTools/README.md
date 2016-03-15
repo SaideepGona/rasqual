@@ -1,7 +1,14 @@
 
+### Installation
+The easiest way to install rasqualTools is to use devtools:
+
+```r
+install.packages("devtools")
+library("devtools")
+devtools::install_github("kauralasoo/rasqual/rasqualTools")
 ```
-## Loading rasqualTools
-```
+
+rasqualTools imports the following other packages: Rsamtools, readr, dplyr, GenomicRanges, plyr, magrittr, assertthat.
 
 ### STEP 1: Save read count matrix onto disk
 Our read count table is on the `counts_matrix` object:

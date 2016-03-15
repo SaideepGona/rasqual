@@ -7,10 +7,18 @@ output:
 data("counts_matrix")
 data("gene_metadata")
 data("snp_coords")
-library("devtools")
-load_all("../rasqualTools")
+library("rasqualTools")
 data("gene_metadata")
 ```
+### Installation
+The easiest way to install rasqualTools is to use devtools:
+```{r eval=FALSE}
+install.packages("devtools")
+library("devtools")
+devtools::install_github("kauralasoo/rasqual/rasqualTools")
+```
+
+rasqualTools imports the following other packages: Rsamtools, readr, dplyr, GenomicRanges, plyr, magrittr, assertthat.
 
 ### STEP 1: Save read count matrix onto disk
 Our read count table is on the `counts_matrix` object:

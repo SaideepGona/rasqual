@@ -1,4 +1,7 @@
 
+### Overview
+This package provides functions to prepare read counts and gene metadata for RASQUAL, export it into binary format and finally import back results from tabix-indexed tab-separated output files.
+
 ### Installation
 The easiest way to install rasqualTools is to use devtools:
 

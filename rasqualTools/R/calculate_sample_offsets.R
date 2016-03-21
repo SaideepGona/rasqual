@@ -45,21 +45,6 @@ Quantile <- function(x,k=20){
   k-z
 }
 
-#' Helper function for rasqualGcCorrection
-#' 
-#' @author Natsuhiko Kumasaka
-randomize <- function(x,g=NULL){
-    if(is.null(g)){
-      n=ncol(x);
-      t(apply(x,1,function(xx){xx[order(runif(n))]}))
-    }else{
-      for(i in unique(g)){
-        x[,g==i]=randomize(x[,g==i,drop=F])
-      }
-      x
-    }
-  }
-
 #' Estimate the effect of GC-bias for each feature in each sample.
 #' 
 #' This function does not correct for differences in library size between samples.
@@ -99,27 +84,3 @@ rasqualGcCorrection <- function(Y,gene_metadata,PLOT=F){
   rownames(result_matrix) = rownames(Y)
   return(result_matrix)
 }
-
-rasqualMakeCovariates <- function(counts, size_factors) {
-  
-  #Map parameters to Natsuhiko's variables
-  Y = counts
-  K = size_factors
-  n=ncol(Y)
-  
-  # fpm calculation
-  fpkm=t(t(Y/K+1)/apply(Y/K,2,sum))*1e6 #  /len*1e9
-  
-  # Singular value decomposition
-  fpkm.svd   = svd((log(fpkm)-apply(log(fpkm),1,mean))/apply(log(fpkm),1,sd))
-  fpkm.svd.r = svd(randomize((log(fpkm)-apply(log(fpkm),1,mean))/apply(log(fpkm),1,sd)))
-  
-  # Covariate selection
-  sf=log(apply(Y,2,sum))
-  covs=fpkm.svd$v[,1:sum(fpkm.svd$d[-n]>fpkm.svd.r$d[-n])]
-  if(cor(sf,covs[,1])^2<0.9){covs=cbind(sf, covs)}
-  
-  # Write covariates
-  return(covs)
-}
-

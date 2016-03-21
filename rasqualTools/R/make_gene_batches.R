@@ -8,6 +8,10 @@
 #' @return Data frame of gene batches (columns: batch_id, gene_ids)
 #' @export
 rasqualConstructGeneBatches <- function(gene_metadata, batch_size, batch_prefix = "batch"){
+  
+  #Check that geme_metadata has required column names
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "gene_id"))
+
   batch_df = dplyr::select(gene_metadata, gene_id) %>%
     dplyr::mutate(batch_number = splitIntoBatches(length(gene_id), batch_size)) %>%
     dplyr::mutate(batch_id = paste(batch_prefix, batch_number, sep = "_")) %>% 
@@ -28,6 +32,12 @@ rasqualConstructGeneBatches <- function(gene_metadata, batch_size, batch_prefix 
 #' @return Data frame of genes split into batches.
 #' @export
 rasqualOptimisedGeneBatches <- function(gene_metadata, batch_sizes = c(20,8,3,1), batch_prefix = "batch"){
+  
+  #Check that geme_metadata has required column names
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "gene_id"))
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "feature_snp_count"))
+  assertthat::assert_that(assertthat::has_name(gene_metadata, "cis_snp_count"))
+  
   #Calculate the number of tests
   gene_metadata = dplyr::mutate(gene_metadata, test_count = feature_snp_count*cis_snp_count)
   

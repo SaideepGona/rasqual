@@ -116,9 +116,5 @@ exportDataForRasqual <- function(condition_list, rasqual_input_folder, max_batch
               row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 }
 
-rasqualMetadataToCovariates <- function(sample_metadata){
-  cov_matrix = dplyr::select(sample_metadata, -sample_id) %>% as.data.frame()
-  row.names(cov_matrix) = sample_metadata$sample_id
-  return(cov_matrix)
-}
+
 

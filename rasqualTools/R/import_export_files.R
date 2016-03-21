@@ -104,34 +104,20 @@ constructGeneRanges <- function(selected_genes, gene_metadata, cis_window){
   return(granges)
 }
 
-#' A general function to quickly import tabix indexed tab-separated files into data_frame
+#' Converts a tidy data frame into a data frame that is suitable for rasqual
 #'
-#' @param tabix_file Path to tabix-indexed text file
-#' @param param A instance of GRanges, RangedData, or RangesList 
-#' provide the sequence names and regions to be parsed. Passed onto Rsamtools::scanTabix()
-#' @param ... Additional parameters to be passed on to readr::read_delim()
+#' Removes genotype_id column from the data frame and makes it row names instead.
 #'
-#' @return List of data_frames, one for each entry in the param GRanges object.
+#' @param metadata Sample metadata data frame
+#' @param genotype_id_column Name of the genotype_id column in metadata
+#'
+#' @return data.frame with genotype ids as row names
 #' @export
-scanTabixDataFrame <- function(tabix_file, param, ...){
-  tabix_list = Rsamtools::scanTabix(tabix_file, param = param)
-  df_list = lapply(tabix_list, function(x,...){
-    if(length(x) > 0){
-      if(length(x) == 1){
-        #Hack to make sure that it also works for data frames with only one row
-        #Adds an empty row and then removes it
-        result = paste(paste(x, collapse = "\n"),"\n",sep = "")
-        result = readr::read_delim(result, delim = "\t", ...)[1,]
-      }else{
-        result = paste(x, collapse = "\n")
-        result = readr::read_delim(result, delim = "\t", ...)
-      }
-    } else{
-      #Return NULL if the nothing is returned from tabix file
-      result = NULL
-    }
-    return(result)
-  }, ...)
-  return(df_list)
+rasqualMetadataToCovariates <- function(metadata, genotype_id_column = "genotype_id"){
+  metadata = as.data.frame(metadata)
+  genotype_ids = metadata[,genotype_id_column]
+  metadata = metadata[,(colnames(metadata) != genotype_id_column)]
+  rownames(metadata) = genotype_ids
+  return(metadata)
 }
 

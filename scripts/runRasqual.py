@@ -14,7 +14,7 @@ parser.add_argument("--outprefix", help = "Prefix of the output file.", required
 parser.add_argument("--geneids", help = "List of gene ids in the same order as in the counts matrix.", required = True)
 parser.add_argument("--geneMetadata", help = "Gene metadata matrix with the following columns (in the same order): gene_id, chromosome_name, strand, exon_starts, exon_ends, range_start, range_end, feature_snp_count, cis_snp_count. Values in range_start and range_end columns specify the start and end of the cis region.", required = True)
 parser.add_argument("--execute", help = "Execute the script", default = "False")
-parser.add_argument("--rasqualBin", help = "Path to the the RASQUAL binary.", default = "/nfs/users/nfs_n/nk5/Project/C/RASQUAL/master/bin/rasqual_mt_icc")
+parser.add_argument("--rasqualBin", help = "Path to the the RASQUAL binary.", default = "rasqual")
 parser.add_argument("--parameters", help = "Additional parameters passed on to RASQUAL. These must be in single quotes and the first dash must be escaped with the \\ character, for example '\\--population-only'.")
 args = parser.parse_args()
 

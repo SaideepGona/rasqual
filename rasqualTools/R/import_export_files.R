@@ -31,7 +31,7 @@ saveRasqualMatrices <- function(data_list, output_dir, file_suffix = "expression
 tabixFetchGenes <- function(gene_ranges, tabix_file){
   #Set column names for rasqual
   rasqual_columns = c("gene_id", "snp_id", "chr", "pos", "allele_freq", "HWE", "IA", "chisq", 
-                      "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged")
+                      "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged","feature_snp_r2", "cis_snp_r2")
   
   result = list()
   for (i in seq_along(gene_ranges)){
@@ -57,7 +57,7 @@ tabixFetchGenes <- function(gene_ranges, tabix_file){
 tabixFetchSNPs <- function(snp_ranges, tabix_file){
   #Set column names for rasqual
   rasqual_columns = c("gene_id", "snp_id", "chr", "pos", "allele_freq", "HWE", "IA", "chisq", 
-                      "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged")
+                      "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged", "feature_snp_r2", "cis_snp_r2")
   
   tabix_table = scanTabixDataFrame(tabix_file, snp_ranges, col_names = rasqual_columns)
   tabix_df = plyr::ldply(tabix_table, .id = NULL) %>%

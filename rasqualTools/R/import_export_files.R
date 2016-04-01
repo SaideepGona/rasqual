@@ -31,7 +31,7 @@ saveRasqualMatrices <- function(data_list, output_dir, file_suffix = "expression
 tabixFetchGenes <- function(gene_ranges, tabix_file){
   #Set column names for rasqual
   rasqual_columns = c("gene_id", "snp_id", "chr", "pos", "allele_freq", "HWE", "IA", "chisq", 
-                      "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged","feature_snp_r2", "cis_snp_r2")
+                      "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged", "feature_snp_r2", "cis_snp_r2")
   
   result = list()
   for (i in seq_along(gene_ranges)){
@@ -45,6 +45,12 @@ tabixFetchGenes <- function(gene_ranges, tabix_file){
     result[[selected_gene_id]] = tabix_table
   }
   return(result)
+}
+
+tabixFetchGenesQuick <- function(gene_ids, tabix_file, gene_metadata, cis_window){
+  gene_df = dplyr::data_frame(gene_id = gene_ids)
+  gene_ranges = constructGeneRanges(gene_df, gene_metadata, cis_window = cis_window)
+  tabix_data = tabixFetchGenes(gene_ranges, tabix_file)
 }
 
 #' Fetch particular SNPs from tabix indexed Rasqual output file.
@@ -64,6 +70,17 @@ tabixFetchSNPs <- function(snp_ranges, tabix_file){
     postprocessRasqualResults() %>%
     dplyr::tbl_df()
   return(tabix_df)
+}
+
+tabixFetchSNPsQuick <- function(snp_ids, tabix_file, snpspos){
+  #Construct SNP ranges
+  selected_snps = dplyr::filter(snpspos, snpid %in% snp_ids) %>%
+    dplyr::transmute(snp_id = snpid, seqnames = chr, start = pos, end = pos, strand = "*") %>%
+    dataFrameToGRanges()
+  
+  #Fetch from tabix
+  tabix_data = tabixFetchSNPs(selected_snps, tabix_file)
+  return(tabix_data)
 }
 
 #' Helper function for tabixFetchGenes and tabixFetchSNPs

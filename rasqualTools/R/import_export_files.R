@@ -66,10 +66,17 @@ tabixFetchSNPs <- function(snp_ranges, tabix_file){
                       "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged", "feature_snp_r2", "cis_snp_r2")
   
   tabix_table = scanTabixDataFrame(tabix_file, snp_ranges, col_names = rasqual_columns)
-  tabix_df = plyr::ldply(tabix_table, .id = NULL) %>%
-    postprocessRasqualResults() %>%
-    dplyr::tbl_df()
-  return(tabix_df)
+  tabix_df = plyr::ldply(tabix_table, .id = NULL)
+  #Check for empty result data frame
+  if(nrow(tabix_df) == 0){
+    warning("No SNPs found in the tabix file.")
+    return(NULL)
+  } else{
+    result = tabix_df %>%
+      postprocessRasqualResults() %>%
+      dplyr::tbl_df()
+    return(result)
+  }
 }
 
 tabixFetchSNPsQuick <- function(snp_ids, tabix_file, snpspos){

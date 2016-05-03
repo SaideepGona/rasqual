@@ -47,10 +47,17 @@ tabixFetchGenes <- function(gene_ranges, tabix_file){
   return(result)
 }
 
-tabixFetchGenesQuick <- function(gene_ids, tabix_file, gene_metadata, cis_window){
+tabixFetchGenesQuick <- function(gene_ids, tabix_file, gene_metadata, cis_window = 5e5){
   gene_df = dplyr::data_frame(gene_id = gene_ids)
-  gene_ranges = constructGeneRanges(gene_df, gene_metadata, cis_window = cis_window)
+  
+  #If gene_metadata is already a GRanges object then just filter it based on gene_ids
+  if(class(gene_metadata) == "GRanges"){
+    gene_ranges = gene_metadata[gene_metadata$gene_id %in% gene_ids]
+  } else { #Otherwise construct a gene ranges object
+    gene_ranges = constructGeneRanges(gene_df, gene_metadata, cis_window = cis_window)
+  }
   tabix_data = tabixFetchGenes(gene_ranges, tabix_file)
+  return(tabix_data)
 }
 
 #' Fetch particular SNPs from tabix indexed Rasqual output file.
@@ -120,7 +127,6 @@ constructGeneRanges <- function(selected_genes, gene_metadata, cis_window){
   assertthat::assert_that(assertthat::is.number(cis_window))
   
   filtered_metadata = dplyr::semi_join(gene_metadata, selected_genes, by = "gene_id")
-  print(filtered_metadata)
   granges = dplyr::mutate(filtered_metadata, range_start = pmax(0, start - cis_window), range_end = end + cis_window) %>%
     dplyr::select(gene_id, chr, range_start, range_end) %>%
     dplyr::transmute(gene_id, seqnames = chr, start = range_start, end = range_end, strand = "*") %>% 

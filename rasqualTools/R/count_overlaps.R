@@ -39,7 +39,7 @@ countSnpsOverlapingPeaks <- function(peak_metadata, snp_coords, cis_window = 500
 #' @return Data frame with exon coordinates, cis region coordiantes as well as the number of cis and feature snps.
 #' @export
 #' @importFrom magrittr "%>%"
-countSnpsOverlapingExons <- function(gene_metadata, snp_coords, cis_window = 5e5){
+countSnpsOverlapingExons <- function(gene_metadata, snp_coords, cis_window = 5e5, return_fSNPs = FALSE){
   
   #Check that all required columns exist in the input data
   assertthat::assert_that(assertthat::has_name(gene_metadata, "gene_id"))
@@ -72,6 +72,13 @@ countSnpsOverlapingExons <- function(gene_metadata, snp_coords, cis_window = 5e5
     dplyr::summarise(seqnames = seqnames[1], strand = strand[1], start = min(start), end = max(end), 
                      feature_snp_count = sum(feature_snp_count))
   
+  #Find ids of feature SNPs
+  if (return_fSNPs){
+    feature_olaps = GenomicRanges::findOverlaps(exon_granges, snp_granges, ignore.strand=TRUE)
+    feature_snps = snp_granges[subjectHits(feature_olaps)]
+    return(feature_snps)
+  }
+  
   #Count the number of cis SNPs
   cis_df = dplyr::mutate(feature_snp_df, start = pmax(0, start - cis_window), end = end + cis_window)
   cis_granges = dataFrameToGRanges(cis_df)
@@ -86,3 +93,4 @@ countSnpsOverlapingExons <- function(gene_metadata, snp_coords, cis_window = 5e5
                      range_start, range_end, feature_snp_count, cis_snp_count)
   return(result)
 }
+

@@ -35,7 +35,7 @@ Using the example data files, you can use the following commands to map expressi
         -e 2323452,2324188,2324711,2325434,2328220,2330040,2330740,2331248,2334985,2337897,2338755,2339430 \
         -t -f TSPAN32 -z
 
-Sample size (in this example, *N*=24) is given by **-n** option, the feature ID is given by **-j** option (only two genes exist in this example, thereby j=1,2).  You need to provide the number of testing SNPs and feature SNPs in the *cis*-window *a priori* (**-l** and **-m**, respectively).  RASQUAL also requires the feature start and end positions (as comma separated values for more than one positions, e.g. such as for a union of exons in this example) as inputs (**-s** and **-e**, respectively).  By default, RASQUAL outputs QTL mapping results for all tested SNPs, but you can also specify only the lead QTL SNP (**-t** option).  In the output, you can also specify the feature name by **-f** option.  To take account of genotype uncertainty, imputation quality score (R square value) are used in this example (**-z** option; see the section below).  
+Sample size (in this example, *N*=24) is given by **-n** option and the feature ID is given by **-j** option.  Here only two genes exist in this example, thereby j=1, 2.  In reality, you may have e.g. >10,000 features in your data, of which you may want to map QTL e.g. for the 12,345th feature, you must set **-j 12345**.  You need to provide the number of testing SNPs and feature SNPs in the *cis*-window *a priori* (**-l** and **-m**, respectively).  RASQUAL also requires the feature start and end positions (as comma separated values for more than one positions, e.g. such as for a union of exons in this example) as inputs (**-s** and **-e**, respectively).  By default, RASQUAL outputs QTL mapping results for all tested SNPs, but you can also specify only the lead QTL SNP (**-t** option).  In the output, you can also specify the feature name by **-f** option.  To take account of genotype uncertainty, imputation quality score (R square value) are used in this example (**-z** option; see the section below).  
 
 ## Output
 
@@ -76,6 +76,8 @@ You can find an example expression data for C11orf21 and TSPAN32 genes in the _d
 	cd $RASQUALDIR
 	RHOME=/software/R-3.0.0/bin/
 	$RHOME/R --vanilla --quiet --args data/Y.txt data/K.txt < R/txt2bin.R > log
+
+Note here that, the row number of the fragment count table corresponds to the feature ID given by **-j** option previously explained.  For example, if you set **-j 12345** in the RASQUAL command, you would map QTL for the 12,345th feature (row) from the top of the fragment count table.
 
 You will also need to prepare custom VCF files containing the allele specific counts of your target cellular trait at all SNPs.  The files have to contain an additional subfield, "AS", located within the genotype field consisting of two integers, the reference and alternative allele counts, separated by a comma.  For example, sample **_i_** is heterozygous at a SNP and has 1 and 10 reads overlapping the reference and alternative alleles respectively, the genotype field for the sample becomes
 
@@ -220,7 +222,7 @@ The permutation test is also implemented in RASQUAL.  The **-r/--random-permutat
 
 ### Multithreading
 
-RASQUAL is now multithreaded in order to speed up execution times, which requires the **pthread** library.  You just need to specify the additional option **--n-thereads** to use this function.  Using the above example, you can use the following commands to map the eQTL with 10 threads:
+RASQUAL is now multithreaded in order to speed up execution times, which requires the **pthread** library.  You just need to specify the additional option **--n-threads** to use this function.  Using the above example, you can use the following commands to map the eQTL with 10 threads:
 
     tabix data/chr11.gz 11:2315000-2340000 | bin/rasqual -y data/Y.bin -k data/K.bin -n 24 -j 1 -l 409 -m 63 \
         -s 2316875,2320655,2321750,2321914,2324112 -e 2319151,2320937,2321843,2323290,2324279 \
@@ -236,7 +238,7 @@ To map subsidiary QTLs conditional on the lead QTL variant(s) can be performed w
 
     bin/rasqual ... -k2 rs0001:0.1,rs0002:0.2 ...
     
-You may introduce any number of variants with thier effect sizes (Pi values) as comma separated values where each variant ID and its Pi value have to be connected by colon (:).
+You may introduce any number of variants with their effect sizes (Pi values) as comma separated values where each variant ID and its Pi value have to be connected by colon (:).
 
 ## Warnings
 

@@ -35,7 +35,7 @@ Using the example data files, you can use the following commands to map expressi
         -e 2323452,2324188,2324711,2325434,2328220,2330040,2330740,2331248,2334985,2337897,2338755,2339430 \
         -t -f TSPAN32 -z
 
-Sample size (in this example, *N*=24) is given by **-n** option and the feature ID is given by **-j** option.  Here only two genes exist in this example, thereby j=1, 2.  In reality, you may have e.g. >10,000 features in your data, of which you may want to map QTL e.g. for the 12,345th feature, you must set **-j 12345**.  You need to provide the number of testing SNPs and feature SNPs in the *cis*-window *a priori* (**-l** and **-m**, respectively).  RASQUAL also requires the feature start and end positions (as comma separated values for more than one positions, e.g. such as for a union of exons in this example) as inputs (**-s** and **-e**, respectively).  By default, RASQUAL outputs QTL mapping results for all tested SNPs, but you can also specify only the lead QTL SNP (**-t** option).  In the output, you can also specify the feature name by **-f** option.  To take account of genotype uncertainty, imputation quality score (R square value) are used in this example (**-z** option; see the section below).  
+Sample size (in this example, *N*=24) is given by **-n** option and the feature ID is given by **-j** option.  Here only two genes exist in this example, thereby j=1, 2.  In reality, you may have e.g. >10,000 features in your data, of which you may want to map QTL e.g. for the 12,345th feature, you must set **-j 12345**.  You need to provide the number of testing SNPs and feature SNPs in the *cis*-window *a priori* (**-l** and **-m**, respectively).  RASQUAL also requires the feature start and end positions (as **comma separated values without space in ascending order** for more than one positions, e.g. such as for a union of exons in this example) as inputs (**-s** and **-e**, respectively).  By default, RASQUAL outputs QTL mapping results for all tested SNPs, but you can also specify only the lead QTL SNP (**-t** option).  In the output, you can also specify the feature name by **-f** option.  To take account of genotype uncertainty, imputation quality score (R square value) are used in this example (**-z** option; see the section below).  
 
 ## Output
 
@@ -50,7 +50,7 @@ On output, RASQUAL provides the following values for each tested SNP:
 7. Allele frequency (not MAF!)*
 8. HWE Chi-square statistic
 9. Imputation quality score (IA)
-10. Benjamini-Hochberg Q-value
+10. Log_10 Benjamini-Hochberg Q-value
 11. Chi square statistic (2 x log Likelihood ratio)*
 12. Effect size (Pi)
 13. Sequencing/mapping error rate (Delta)
@@ -97,7 +97,7 @@ To maximise the ability of RASQUAL, we recommend to incorporate uncertainty in i
         ... FORMAT ... Sample_i      ...
         ... AP:AS  ... 0.0,-5.0:1,10 ...
 
-2. **Genotype likelihood** (GL)
+2. **Genotype likelihood** (GL & GP)
 
     You may also use genotype likelihood (in Log10 scale) from conventional genotype imputation in conjunction with phased genotype data:
 

@@ -32,12 +32,13 @@ tabixFetchGenes <- function(gene_ranges, tabix_file){
   #Set column names for rasqual
   rasqual_columns = c("gene_id", "snp_id", "chr", "pos", "allele_freq", "HWE", "IA", "chisq", 
                       "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged", "feature_snp_r2", "cis_snp_r2")
+  rasqual_col_types = "ccciddddddddddidd"
   
   result = list()
   for (i in seq_along(gene_ranges)){
     selected_gene_id = gene_ranges[i]$gene_id
     print(i)
-    tabix_table = scanTabixDataFrame(tabix_file, gene_ranges[i], col_names = rasqual_columns)[[1]] %>%
+    tabix_table = scanTabixDataFrame(tabix_file, gene_ranges[i], col_names = rasqual_columns, col_types = rasqual_col_types)[[1]] %>%
       dplyr::filter(gene_id == selected_gene_id)
     
     #Add additional columns
@@ -71,8 +72,9 @@ tabixFetchSNPs <- function(snp_ranges, tabix_file){
   #Set column names for rasqual
   rasqual_columns = c("gene_id", "snp_id", "chr", "pos", "allele_freq", "HWE", "IA", "chisq", 
                       "effect_size", "delta", "phi", "overdisp", "n_feature_snps", "n_cis_snps", "converged", "feature_snp_r2", "cis_snp_r2")
+  rasqual_col_types = "ccciddddddddddidd"
   
-  tabix_table = scanTabixDataFrame(tabix_file, snp_ranges, col_names = rasqual_columns)
+  tabix_table = scanTabixDataFrame(tabix_file, snp_ranges, col_names = rasqual_columns, col_types = rasqual_col_types)
   tabix_df = plyr::ldply(tabix_table, .id = NULL)
   #Check for empty result data frame
   if(nrow(tabix_df) == 0){

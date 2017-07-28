@@ -24,7 +24,8 @@ for line in fileinput.input("-"):
 		path_out = os.path.join(args.outdir, sample_name, sample_name + args.outsuffix)
 		gatk_path = " ".join([args.java_path, "-jar", "-Xmx"+args.Xmx, args.gatk_path, "-T ASEReadCounter"])
 		#The -dt NONE flag disables downsampling in GATK
-		flags = "-U ALLOW_N_CIGAR_READS -dt NONE --minMappingQuality 10 -rf MateSameStrand"
+		#flags = "-U ALLOW_N_CIGAR_READS -dt NONE --minMappingQuality 10 -rf MateSameStrand"
+		flags = "-U ALLOW_N_CIGAR_READS -dt NONE --minMappingQuality 10" #ChIP-seq analysis
 		command = " ".join([gatk_path, "-R", args.reference, "-I", path_in, "-o", path_out, "-sites", args.sites, flags])
 		print(command)
 		if args.execute == "True":

@@ -1,0 +1,44 @@
+1.) Create a directory for a new project. 
+2.) Copy over the example config file to this directory and modify it according to need.
+3.) Copy over the luigi-wrapper file as well.
+4.) Download the sciluigi github repository
+5.) Modify the luigi-wrapper PYTHONPATH to include the path to your sciluigi directory
+6.) Set up your data in your data directory. Make sure to organize using the following structure:
+
+
+output_directory/ <- Specified in config file. All pipeline outputs will go here
+        |
+        Data/     <- Will automatically check here
+            | 
+            experiment_id1/      
+                |
+                sample_id1
+                    |
+                    *.fastq.gz
+                    *.fastq.gz
+                sample_id2
+                    |
+                    *.fastq.gz
+                    *.fastq.gz
+                ...
+            experiment_id2/
+                |
+                sample_id1
+                    |
+                    *.fastq.gz
+                    *.fastq.gz
+                sample_id2
+                    |
+                    *.fastq.gz
+                    *.fastq.gz
+                ...
+                
+7.) Create a file containing the sample names of interest IN THE SAME ORDER AS COLUMNS IN YOUR VCF. Specify the path to this in your config file.
+
+8.) Once everything is set up and the config files up to date, its possible to start running the
+portions of the pipeline.
+
+    1.) To run WASP mapping run the following:
+            bash luigi-wrapper WASP_alignment --experiment-id *experiment-id of interest*
+    
+    2.)
